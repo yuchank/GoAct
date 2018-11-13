@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	_ "matchers"
-	"search"
+	_ "goact/matchers"
+	"goact/search"
 )
 
 // init is called prior to main.
@@ -17,3 +17,7 @@ func init() {
 func main() {
 	search.Run("president")
 }
+
+// As of Go 1.11,
+// $ go mod init <mod_name>
+// $ import "mod_name/pkg_name"
