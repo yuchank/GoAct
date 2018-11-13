@@ -1,13 +1,12 @@
 package search
 
 import (
-	"fmt"
 	"log"
 )
 
 // Result contains the result of a search.
 type Result struct {
-	Field string
+	Field   string
 	Content string
 }
 
@@ -19,7 +18,7 @@ type Matcher interface {
 
 // Match is launched as a goroutine for each individual feed to run
 // searches concurrently.
-func Match(matcher Matcher, feed *Feed, searchTerm string, results chan <- *Result) {
+func Match(matcher Matcher, feed *Feed, searchTerm string, results chan<- *Result) {
 	// Perform the search against the specified matcher.
 	searchResults, err := matcher.Search(feed, searchTerm)
 	if err != nil {
@@ -39,6 +38,6 @@ func Display(results chan *Result) {
 	// The channel blocks until a result is written to the channel.
 	// Once the channel is closed the for loop terminates.
 	for result := range results {
-		fmt.Println("%s:\n%s\n\n", result.Field, result.Content)
+		log.Printf("%s:\n%s\n\n", result.Field, result.Content)
 	}
 }

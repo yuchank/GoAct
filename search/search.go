@@ -1,8 +1,8 @@
 package search
 
 import (
-	"sync"
 	"log"
+	"sync"
 )
 
 // A map of registered matchers for searching.
@@ -22,7 +22,7 @@ func Run(searchTerm string) {
 	// Setup a wait group so we can process all the feeds.
 	var waitGroup sync.WaitGroup
 
-	// Set the number of goroutines we need to wait for while 
+	// Set the number of goroutines we need to wait for while
 	// they process the individual feeds.
 	waitGroup.Add(len(feeds))
 
@@ -35,23 +35,33 @@ func Run(searchTerm string) {
 		}
 
 		// Launch the goroutine to perform the search
-		go func (matcher Matcher, feed *Feed) {
+		go func(matcher Matcher, feed *Feed) {
 			Match(matcher, feed, searchTerm, results)
 			waitGroup.Done()
-		} (matcher, feed)
+		}(matcher, feed)
 	}
 
 	// Launch a goroutine to monitor when all the work is done.
-	go func () {
+	go func() {
 		// Wait for everything to be processed.
 		waitGroup.Wait()
 
 		// Close the channel to signal to the Display
 		// function that we can exit the program.
 		close(results)
-	} ()
+	}()
 
 	// Start displaying results as they are available and
 	// return after the final result is displayed.
 	Display(results)
+}
+
+// Register is called to register a matcher for use by the program.
+func Register(feedType string, matcher Matcher) {
+	if _, exists := matchers[feedType]; exists {
+		log.Fatalln(feedType, "Matcher already registered")
+	}
+
+	log.Println("Register", feedType, "matcher")
+	matchers[feedType] = matcher
 }
